@@ -10,7 +10,7 @@ import java.util.*;
  *
  * @author Romain Vermot <rfmv2@kent.ac.uk>
 */
-public class Graph {
+public class Graph extends AbstractCanonicalForm {
 	private List<Vertex> vertices;
 
 	/**
@@ -40,6 +40,11 @@ public class Graph {
 		this.vertices = vertices;
 	}
 
+	@Override
+	public int getNumberOfVertices() {
+		return vertices.size();
+	}
+
 	/**
 	 * This method adds an edge between two vertices.
 	 *
@@ -52,6 +57,37 @@ public class Graph {
 
 		s.addAdjacentVertex(e);
 		e.addAdjacentVertex(s);
+	}
+
+	@Override
+	public int neighboursInBlock(Set<Integer> block, int vertexIndex) {
+		Map<Integer, Integer> neighbourCounts = new HashMap<>();
+
+		for (Integer elem : block) {
+			Vertex v = vertices.get(elem);
+			for (Vertex neighbour : v.getAdjacentVertices()) {
+				int name = neighbour.getName();
+				if (neighbourCounts.containsKey(name)) {
+					neighbourCounts.put(name, neighbourCounts.get(name) + 1);
+				} else {
+					neighbourCounts.put(name, 1);
+				}
+			}
+		}
+		return neighbourCounts.containsKey(vertexIndex) ? neighbourCounts.get(vertexIndex) : 0;
+	}
+
+	@Override
+	public int getConnectivity(int vertexI, int vertexJ) {
+		Vertex v = vertices.get(vertexI);
+
+		int connectivity = 0;
+		for (Vertex n : v.getAdjacentVertices()) {
+			if (vertexJ == n.getName()) {
+				connectivity++;
+			}
+		}
+		return connectivity;
 	}
 
 	/**
